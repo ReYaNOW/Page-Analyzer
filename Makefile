@@ -4,7 +4,8 @@ install:
 	poetry install
 
 build:
-	./build.sh
+	make install
+	psql -a -d ${DATABASE_URL} -f database.sql
 
 dev:
 	poetry run flask --app page_analyzer:app --debug run --port 8000
@@ -14,3 +15,6 @@ start:
 
 lint:
 	poetry run flake8
+
+delete_urls:
+	psql -a -d ${DATABASE_URL} -c 'TRUNCATE TABLE urls'
