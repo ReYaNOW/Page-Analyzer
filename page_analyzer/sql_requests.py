@@ -27,9 +27,9 @@ def find_url(url=None, id_=None):
 
     with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
         if url:
-            curs.execute(f'SELECT * FROM urls WHERE name=%s', [url])
+            curs.execute('SELECT * FROM urls WHERE name=%s', [url])
         else:
-            curs.execute(f'SELECT * FROM urls WHERE id=%s', [id_])
+            curs.execute('SELECT * FROM urls WHERE id=%s', [id_])
         found_url = curs.fetchone()
 
     conn.commit()
@@ -46,7 +46,7 @@ def add_new_url(url):
             'INSERT INTO urls (name, created_at) VALUES (%s, %s)',
             [url, current_date],
         )
-        curs.execute(f'SELECT * FROM urls WHERE name=%s', [url])
+        curs.execute('SELECT * FROM urls WHERE name=%s', [url])
         found_url = curs.fetchone()
 
     conn.commit()
