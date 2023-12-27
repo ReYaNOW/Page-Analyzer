@@ -1,4 +1,4 @@
-from urllib.parse import urlparse
+import secrets
 
 from flask import (
     Flask,
@@ -9,29 +9,12 @@ from flask import (
     get_flashed_messages,
     render_template,
 )
-import validators
-import secrets
 
-from page_analyzer.sql_requests import get_all_urls, find_url, add_new_url
+from page_analyzer.sql_requests import Database
+from page_analyzer.utils import validate_and_fix_url
 
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(16)
-
-
-def validate_url(url):
-    if not url:
-        flash('URL обязателен', 'danger')
-        return False
-    if not validators.url(url):
-        flash('Некорректный URL', 'danger')
-        return False
-    return True
-
-
-def fix_url(url):
-    parsed_url = urlparse(url)
-    parsed_url = parsed_url._replace(query='')._replace(path='')  # noqa
-    return parsed_url.geturl().lower()
 
 
 @app.route('/')
@@ -42,37 +25,71 @@ def index():
 
 @app.get('/urls')
 def get_urls():
+    db = Database(connect=True)
+    urls = db.get_all_urls()
+
+    last_checks = {}
+    for url in urls:
+        lst_chck = db.get_last_check(url.id)
+        last_checks[url.id] = lst_chck.created_at if lst_chck else ''
+    db.close()
     messages = get_flashed_messages(with_categories=True)
-    urls = get_all_urls(desc_order=True)
     return render_template(
-        'url_related/urls.html', urls=urls, messages=messages
+        'url_related/urls.html',
+        urls=urls,
+        last_checks=last_checks,
+        messages=messages,
+    )
+
+
+@app.route('/urls/<int:url_id>')
+def get_url(url_id):
+    db = Database(connect=True)
+    url_info = db.find_url_by_id(id_=url_id)
+    if not url_info:
+        return render_template('url_related/url_not_found.html'), 404
+
+    url_checks = db.get_all_checks(url_id)
+
+    db.close()
+    messages = get_flashed_messages(with_categories=True)
+    return render_template(
+        'url_related/url.html',
+        url=url_info,
+        url_checks=url_checks,
+        messages=messages,
     )
 
 
 @app.post('/urls')
 def create_url_page():
     new_url = request.form.get('url')
-    new_url = fix_url(new_url)
+    fixed_url = validate_and_fix_url(new_url)
 
-    if not validate_url(new_url):
+    if not fixed_url:
         messages = get_flashed_messages(with_categories=True)
         return render_template('index.html', messages=messages)
 
-    found_url = find_url(new_url)
+    db = Database(connect=True)
+    found_url = db.find_url_by_name(new_url)
+
     if not found_url:
-        new_url_id = add_new_url(new_url)
+        new_url_id = db.add_new_url(new_url)
         flash('Страница успешно добавлена', 'success')
-        return redirect(url_for('get_url', url_id=new_url_id))
+        return redirect(url_for('get_url', url_id=new_url_id), code=302)
 
     url_id = found_url.id
     flash('Страница уже существует', 'info')
-    return redirect(url_for('get_url', url_id=url_id))
+
+    db.close()
+    return redirect(url_for('get_url', url_id=url_id), code=302)
 
 
-@app.route('/urls/<int:url_id>')
-def get_url(url_id):
-    messages = get_flashed_messages(with_categories=True)
-    url_info = find_url(id_=url_id)
-    return render_template(
-        'url_related/url.html', url=url_info, messages=messages
-    )
+@app.post('/urls/<int:url_id>/checks')
+def make_check(url_id):
+    db = Database(connect=True)
+    db.add_check(url_id)
+    db.commit()
+
+    flash('Страница успешно проверена', 'success')
+    return redirect(url_for('get_url', url_id=url_id), code=302)
