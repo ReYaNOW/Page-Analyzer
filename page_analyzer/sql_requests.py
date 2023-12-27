@@ -5,50 +5,86 @@ import psycopg2
 from dotenv import load_dotenv
 from psycopg2.extras import NamedTupleCursor
 
-load_dotenv(r'C:\Users\ReYaN\python_projects\python-project-83\.env')
+load_dotenv('.env')
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 
-def get_all_urls(desc_order=False):
-    conn = psycopg2.connect(DATABASE_URL)
-    desc_str = 'DESC' if desc_order else ''
-
-    with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
-        curs.execute(f'SELECT * FROM urls ORDER BY id {desc_str}')
-        found_url = curs.fetchall()
-
-    conn.commit()
-    conn.close()
-    return found_url
-
-
-def find_url(url=None, id_=None):
-    conn = psycopg2.connect(DATABASE_URL)
-
-    with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
-        if url:
-            curs.execute('SELECT * FROM urls WHERE name=%s', [url])
+class Database:
+    def __init__(self, connect=False):
+        if connect:
+            self.conn = psycopg2.connect(DATABASE_URL)
         else:
-            curs.execute('SELECT * FROM urls WHERE id=%s', [id_])
-        found_url = curs.fetchone()
+            self.conn = None
 
-    conn.commit()
-    conn.close()
-    return found_url
+    def _make_request(self, request, params=None, fetch_type=None):
+        if self.conn is None:
+            raise ConnectionError(
+                'Need to connect to db before making requests'
+            )
 
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as curs:
+            curs.execute(request, params)
 
-def add_new_url(url):
-    conn = psycopg2.connect(DATABASE_URL)
-    current_date = date.today()
+            match fetch_type:
+                case 'all':
+                    data = curs.fetchall()
+                case 'one':
+                    data = curs.fetchone()
+                case _:
+                    data = None
+        return data
 
-    with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
-        curs.execute(
-            'INSERT INTO urls (name, created_at) VALUES (%s, %s)',
-            [url, current_date],
+    def get_all_urls(self):
+        return self._make_request(
+            f'SELECT * FROM urls ORDER BY id DESC', fetch_type='all'
         )
-        curs.execute('SELECT * FROM urls WHERE name=%s', [url])
-        found_url = curs.fetchone()
 
-    conn.commit()
-    conn.close()
-    return found_url.id
+    def find_url_by_name(self, url):
+        return self._make_request(
+            'SELECT * FROM urls WHERE name=%s', [url], fetch_type='one'
+        )
+
+    def find_url_by_id(self, id_):
+        return self._make_request(
+            'SELECT * FROM urls WHERE id=%s', [id_], fetch_type='one'
+        )
+
+    def add_new_url(self, url):
+        self._make_request(
+            'INSERT INTO urls (name, created_at) VALUES (%s, %s)',
+            [url, date.today()],
+        )
+        self.commit()
+        added_url = self._make_request(
+            'SELECT * FROM urls WHERE name=%s', [url], fetch_type='one'
+        )
+        return added_url.id
+
+    def add_check(self, url_id):
+        self._make_request(
+            'INSERT INTO url_checks (url_id, created_at) VALUES (%s, %s)',
+            [url_id, date.today()],
+        )
+
+    def get_all_checks(self, url_id):
+        return self._make_request(
+            'SELECT * FROM url_checks WHERE url_id=%s '
+            'ORDER BY id DESC',
+            [url_id],
+            fetch_type='all',
+        )
+    
+    def get_last_check(self, url_id):
+        return self._make_request(
+            'SELECT created_at FROM url_checks WHERE url_id=%s '
+            'ORDER BY id DESC LIMIT 1',
+            [url_id],
+            fetch_type='one',
+        )
+
+    def commit(self):
+        self.conn.commit()
+
+    def close(self):
+        self.conn.commit()
+        self.conn.close()
