@@ -36,7 +36,7 @@ class Database:
 
     def get_all_urls(self):
         return self._make_request(
-            f'SELECT * FROM urls ORDER BY id DESC', fetch_type='all'
+            'SELECT * FROM urls ORDER BY id DESC', fetch_type='all'
         )
 
     def find_url_by_name(self, url):
@@ -68,12 +68,11 @@ class Database:
 
     def get_all_checks(self, url_id):
         return self._make_request(
-            'SELECT * FROM url_checks WHERE url_id=%s '
-            'ORDER BY id DESC',
+            'SELECT * FROM url_checks WHERE url_id=%s ORDER BY id DESC',
             [url_id],
             fetch_type='all',
         )
-    
+
     def get_last_check(self, url_id):
         return self._make_request(
             'SELECT created_at FROM url_checks WHERE url_id=%s '
