@@ -14,7 +14,7 @@ start:
 	poetry run gunicorn -w 5 -b 0.0.0.0:$(PORT) page_analyzer:app
 
 lint:
-	poetry run flake8
+	poetry run flake8 page_analyzer
 
 delete_urls:
 	psql -a -d ${DATABASE_URL} -c 'TRUNCATE TABLE urls'
