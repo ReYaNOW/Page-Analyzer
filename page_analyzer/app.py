@@ -9,9 +9,10 @@ from flask import (
     get_flashed_messages,
     render_template,
 )
+from requests.exceptions import RequestException
 
 from page_analyzer.sql_requests import Database
-from page_analyzer.utils import validate_and_fix_url
+from page_analyzer.utils import validate_and_fix_url, make_http_request
 
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(16)
@@ -26,18 +27,13 @@ def index():
 @app.get('/urls')
 def get_urls():
     db = Database(connect=True)
-    urls = db.get_all_urls()
+    urls_with_code = db.get_urls_with_code()
 
-    last_checks = {}
-    for url in urls:
-        lst_chck = db.get_last_check(url.id)
-        last_checks[url.id] = lst_chck.created_at if lst_chck else ''
     db.close()
     messages = get_flashed_messages(with_categories=True)
     return render_template(
         'url_related/urls.html',
-        urls=urls,
-        last_checks=last_checks,
+        urls=urls_with_code,
         messages=messages,
     )
 
@@ -45,7 +41,7 @@ def get_urls():
 @app.route('/urls/<int:url_id>')
 def get_url(url_id):
     db = Database(connect=True)
-    url_info = db.find_url_by_id(id_=url_id)
+    url_info = db.get_url_by_id(id_=url_id)
     if not url_info:
         return render_template('url_related/url_not_found.html'), 404
 
@@ -71,10 +67,10 @@ def create_url_page():
         return render_template('index.html', messages=messages)
 
     db = Database(connect=True)
-    found_url = db.find_url_by_name(new_url)
+    found_url = db.get_url_by_name(fixed_url)
 
     if not found_url:
-        new_url_id = db.add_new_url(new_url)
+        new_url_id = db.add_new_url(fixed_url)
         flash('Страница успешно добавлена', 'success')
         return redirect(url_for('get_url', url_id=new_url_id), code=302)
 
@@ -88,8 +84,21 @@ def create_url_page():
 @app.post('/urls/<int:url_id>/checks')
 def make_check(url_id):
     db = Database(connect=True)
-    db.add_check(url_id)
-    db.commit()
 
-    flash('Страница успешно проверена', 'success')
+    url = db.get_url_by_id(url_id).name
+    try:
+        request = make_http_request(url)
+        db.add_check(url_id, request.status_code)
+        db.commit()
+        flash('Страница успешно проверена', 'success')
+
+    except RequestException:
+        flash('Произошла ошибка при проверке', 'danger')
+
+    db.close()
     return redirect(url_for('get_url', url_id=url_id), code=302)
+
+
+@app.errorhandler(404)
+def page_not_found(_):
+    return render_template('url_related/url_not_found.html'), 404
