@@ -16,5 +16,5 @@ start:
 lint:
 	poetry run flake8 page_analyzer
 
-truncate_urls:
-	psql -a -d ${DATABASE_URL} -c 'TRUNCATE TABLE urls'
+truncate_db:
+	psql -a -d ${DATABASE_URL} -c 'TRUNCATE TABLE urls, url_checks'
