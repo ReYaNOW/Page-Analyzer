@@ -2,21 +2,45 @@ from urllib.parse import urlparse
 
 import validators
 from flask import flash
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 
-def validate_and_fix_url(url):
+def validate_and_fix_url(url: str) -> str | bool:
     if not url:
         flash('URL обязателен', 'danger')
         return False
 
     url = fix_url(url)
+
+    if len(url) > 255:
+        flash('URL превышает 255 символов', 'danger')
+
     if not validators.url(url):
         flash('Некорректный URL', 'danger')
         return False
-    return True
+    return url
 
 
-def fix_url(url) -> str:
+def fix_url(url: str) -> str:
     parsed_url = urlparse(url)
     parsed_url = parsed_url._replace(query='')._replace(path='')  # noqa
-    return str(parsed_url.geturl().lower())
+    return parsed_url.geturl().lower()
+
+
+def make_http_request(url: str) -> requests.Response:
+    retries = Retry(total=3, backoff_factor=0.3)
+    session = requests.Session()
+    adapter = HTTPAdapter(max_retries=retries)
+
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) '
+                      'Gecko/20100101 Firefox/120.0'
+    }
+    response = session.get(url, timeout=0.5, headers=headers)
+    response.raise_for_status()
+    return response
