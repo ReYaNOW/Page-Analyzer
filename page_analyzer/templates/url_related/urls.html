@@ -55,8 +55,8 @@
                 {{ url.name }}
               </a>
             </td>
-            <td>{{ last_checks[url.id] }}</td>
-            <td></td>
+            <td>{{ url.last_check if  url.last_check is not none else ''}}</td>
+            <td>{{ url.last_code if  url.last_code is not none else ''}}</td>
           </tr>
         {% endfor %}
         </tbody>
