@@ -39,12 +39,12 @@ class Database:
             'SELECT * FROM urls ORDER BY id DESC', fetch_type='all'
         )
 
-    def find_url_by_name(self, url):
+    def get_url_by_name(self, url):
         return self._make_request(
             'SELECT * FROM urls WHERE name=%s', [url], fetch_type='one'
         )
 
-    def find_url_by_id(self, id_):
+    def get_url_by_id(self, id_):
         return self._make_request(
             'SELECT * FROM urls WHERE id=%s', [id_], fetch_type='one'
         )
@@ -60,10 +60,11 @@ class Database:
         )
         return added_url.id
 
-    def add_check(self, url_id):
+    def add_check(self, url_id, status_code):
         self._make_request(
-            'INSERT INTO url_checks (url_id, created_at) VALUES (%s, %s)',
-            [url_id, date.today()],
+            'INSERT INTO url_checks (url_id, status_code, created_at) '
+            'VALUES (%s, %s, %s)',
+            [url_id, status_code, date.today()],
         )
 
     def get_all_checks(self, url_id):
@@ -73,13 +74,19 @@ class Database:
             fetch_type='all',
         )
 
-    def get_last_check(self, url_id):
+    def get_urls_with_code(self):
         return self._make_request(
-            'SELECT created_at FROM url_checks WHERE url_id=%s '
-            'ORDER BY id DESC LIMIT 1',
-            [url_id],
-            fetch_type='one',
+            'SELECT DISTINCT ON (urls.id) urls.id, name,  '
+            'url_checks.created_at AS last_check, '
+            'status_code AS last_code '
+            'FROM urls '
+            'LEFT JOIN url_checks ON urls.id = url_checks.url_id '
+            'ORDER BY urls.id DESC',
+            fetch_type='all',
         )
+
+    def connect(self):
+        self.conn = psycopg2.connect(DATABASE_URL)
 
     def commit(self):
         self.conn.commit()
