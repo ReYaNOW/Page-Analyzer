@@ -51,8 +51,8 @@ class Database:
 
     def add_new_url(self, url):
         self._make_request(
-            'INSERT INTO urls (name, created_at) VALUES (%s, %s)',
-            [url, date.today()],
+            'INSERT INTO urls (name) VALUES (%s)',
+            [url],
         )
         self.commit()
         added_url = self._make_request(
@@ -60,14 +60,16 @@ class Database:
         )
         return added_url.id
 
-    def add_check(self, url_id, status_code):
+    def add_check(self, url_id, status_code, tags):
+        h1, title, desc = tags['h1'], tags['title'], tags['desc']
         self._make_request(
-            'INSERT INTO url_checks (url_id, status_code, created_at) '
-            'VALUES (%s, %s, %s)',
-            [url_id, status_code, date.today()],
+            'INSERT INTO url_checks '
+            '(url_id, status_code, h1, title, description) '
+            'VALUES (%s, %s, %s, %s, %s)',
+            [url_id, status_code, h1, title, desc],
         )
 
-    def get_all_checks(self, url_id):
+    def get_all_checks_for_url(self, url_id):
         return self._make_request(
             'SELECT * FROM url_checks WHERE url_id=%s ORDER BY id DESC',
             [url_id],
