@@ -74,10 +74,10 @@
         {% for check in url_checks %}
           <tr>
             <td>{{ check.id }}</td>
-            <td>{{ url.status_code if  url.status_code is not none else '' }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>{{ check.status_code }}</td>
+            <td>{{ check.h1 if  check.h1 else '' }}</td>
+            <td>{{ check.title if  check.title else '' }} </td>
+            <td>{{ check.description if  check.description else ''}}</td>
             <td>{{ check.created_at }}</td>
           </tr>
         {% endfor %}
