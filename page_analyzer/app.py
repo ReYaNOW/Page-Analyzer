@@ -1,4 +1,5 @@
 import secrets
+from time import sleep
 
 from flask import (
     Flask,
@@ -23,7 +24,7 @@ app.secret_key = secrets.token_urlsafe(16)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', sleep=sleep)
 
 
 @app.get('/urls')
@@ -32,7 +33,7 @@ def get_urls():
     urls_with_code = db.get_urls_with_code()
 
     db.close()
-    return render_template('url_related/urls.html', urls=urls_with_code)
+    return render_template('url_related/urls.html', urls=urls_with_code, sleep=sleep)
 
 
 @app.route('/urls/<int:url_id>')
@@ -46,7 +47,7 @@ def get_url(url_id):
 
     db.close()
     return render_template(
-        'url_related/url.html', url=url_info, url_checks=url_checks
+        'url_related/url.html', url=url_info, url_checks=url_checks, sleep=sleep
     )
 
 
