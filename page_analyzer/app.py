@@ -79,9 +79,10 @@ def make_check(url_id):
 
     url = db.get_url_by_id(url_id).name
     try:
-        request = make_http_request(url)
-        tags = get_specific_tags(request.text)
-        db.add_check(url_id, request.status_code, tags)
+        resp = make_http_request(url)
+        resp.raise_for_status()
+        tags = get_specific_tags(resp.text)
+        db.add_check(url_id, resp.status_code, tags)
         db.commit()
         flash('Страница успешно проверена', 'success')
 

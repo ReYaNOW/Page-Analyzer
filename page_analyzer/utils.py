@@ -26,8 +26,11 @@ def validate_and_fix_url(url: str) -> str | bool:
 
 def fix_url(url: str) -> str:
     parsed_url = urlparse(url)
-    parsed_url = parsed_url._replace(query='')._replace(path='')  # noqa
-    return parsed_url.geturl().lower()
+    
+    normalized_scheme = parsed_url.scheme.lower()
+    normalized_host = parsed_url.hostname.lower()
+    
+    return f'{normalized_scheme}://{normalized_host}'
 
 
 def make_http_request(url: str) -> requests.Response:
@@ -45,7 +48,6 @@ def make_http_request(url: str) -> requests.Response:
         'Gecko/20100101 Firefox/120.0'
     }
     response = session.get(url, timeout=0.5, headers=headers)
-    response.raise_for_status()
     return response
 
 
