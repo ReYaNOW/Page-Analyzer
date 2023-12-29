@@ -31,7 +31,9 @@ def fix_url(url: str) -> str:
 
 
 def make_http_request(url: str) -> requests.Response:
-    retries = Retry(total=3, backoff_factor=0.3)
+    retries = Retry(
+        total=3, backoff_factor=0.3, status_forcelist=[500, 502, 503, 504]
+    )
     session = requests.Session()
     adapter = HTTPAdapter(max_retries=retries)
 
