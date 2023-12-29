@@ -61,16 +61,15 @@ def create_url_page():
     db = Database(connect=True)
     found_url = db.get_url_by_name(fixed_url)
 
-    if not found_url:
+    if found_url:
+        flash('Страница уже существует', 'info')
+        new_url_id = found_url.id
+    else:
         new_url_id = db.add_new_url(fixed_url)
         flash('Страница успешно добавлена', 'success')
-        return redirect(url_for('get_url', url_id=new_url_id))
-
-    url_id = found_url.id
-    flash('Страница уже существует', 'info')
 
     db.close()
-    return redirect(url_for('get_url', url_id=url_id))
+    return redirect(url_for('get_url', url_id=new_url_id))
 
 
 @app.post('/urls/<int:url_id>/checks')
