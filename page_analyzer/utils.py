@@ -5,6 +5,7 @@ from flask import flash
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from bs4 import BeautifulSoup
 
 
 def validate_and_fix_url(url: str) -> str | bool:
@@ -44,3 +45,13 @@ def make_http_request(url: str) -> requests.Response:
     response = session.get(url, timeout=0.5, headers=headers)
     response.raise_for_status()
     return response
+
+
+def get_specific_tags(page):
+    soup = BeautifulSoup(page, 'html.parser')
+
+    h1 = soup.find('h1').string
+    title = soup.title.string
+    desc = soup.head.find(attrs={'name': 'description'})['content']
+
+    return {'h1': h1, 'title': title, 'desc': desc}
