@@ -1,4 +1,4 @@
-import secrets
+import os
 
 from flask import (
     Flask,
@@ -18,7 +18,7 @@ from page_analyzer.utils import (
 )
 
 app = Flask(__name__)
-app.secret_key = secrets.token_urlsafe(16)
+app.secret_key = os.getenv('SECRET_KEY')
 
 
 @app.route('/')
