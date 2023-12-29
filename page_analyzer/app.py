@@ -12,7 +12,11 @@ from flask import (
 from requests.exceptions import RequestException
 
 from page_analyzer.sql_requests import Database
-from page_analyzer.utils import validate_and_fix_url, make_http_request
+from page_analyzer.utils import (
+    validate_and_fix_url,
+    make_http_request,
+    get_specific_tags,
+)
 
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(16)
@@ -45,7 +49,7 @@ def get_url(url_id):
     if not url_info:
         return render_template('url_related/url_not_found.html'), 404
 
-    url_checks = db.get_all_checks(url_id)
+    url_checks = db.get_all_checks_for_url(url_id)
 
     db.close()
     messages = get_flashed_messages(with_categories=True)
@@ -88,7 +92,8 @@ def make_check(url_id):
     url = db.get_url_by_id(url_id).name
     try:
         request = make_http_request(url)
-        db.add_check(url_id, request.status_code)
+        tags = get_specific_tags(request.text)
+        db.add_check(url_id, request.status_code, tags)
         db.commit()
         flash('Страница успешно проверена', 'success')
 
