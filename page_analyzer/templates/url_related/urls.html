@@ -24,12 +24,7 @@
 </header>
 {% if messages %}
   {% for category, message in messages %}
-    <div class="alert alert-dismissible alert-{{ category }}"
-         role="alert">
-      {{ message }}
-      <button aria-hidden="true" aria-label="Close" class="btn-close"
-              data-bs-dismiss="alert" type="button"></button>
-    </div>
+    <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
   {% endfor %}
 {% endif %}
 <main class="flex-grow-1">
