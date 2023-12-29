@@ -26,10 +26,10 @@ def validate_and_fix_url(url: str) -> str | bool:
 
 def fix_url(url: str) -> str:
     parsed_url = urlparse(url)
-    
+
     normalized_scheme = parsed_url.scheme.lower()
     normalized_host = parsed_url.hostname.lower()
-    
+
     return f'{normalized_scheme}://{normalized_host}'
 
 
