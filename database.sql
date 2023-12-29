@@ -1,4 +1,3 @@
-DROP TABLE urls, url_checks;
 CREATE TABLE IF NOT EXISTS urls
 (
     id         bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
