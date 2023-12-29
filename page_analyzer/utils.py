@@ -52,10 +52,10 @@ def make_http_request(url: str) -> requests.Response:
 def get_specific_tags(page):
     soup = BeautifulSoup(page, 'html.parser')
 
-    h1 = soup.find('h1').string
+    h1 = soup.find('h1')
     h1 = h1.string if h1 else None
 
-    title = soup.title.string
+    title = soup.title
     title = title.string if title else None
 
     tag = soup.head.find(attrs={'name': 'description'})
