@@ -6,7 +6,6 @@ from flask import (
     url_for,
     request,
     redirect,
-    get_flashed_messages,
     render_template,
 )
 from requests.exceptions import RequestException
@@ -24,8 +23,7 @@ app.secret_key = secrets.token_urlsafe(16)
 
 @app.route('/')
 def index():
-    messages = get_flashed_messages(with_categories=True)
-    return render_template('index.html', messages=messages)
+    return render_template('index.html')
 
 
 @app.get('/urls')
@@ -34,12 +32,7 @@ def get_urls():
     urls_with_code = db.get_urls_with_code()
 
     db.close()
-    messages = get_flashed_messages(with_categories=True)
-    return render_template(
-        'url_related/urls.html',
-        urls=urls_with_code,
-        messages=messages,
-    )
+    return render_template('url_related/urls.html', urls=urls_with_code)
 
 
 @app.route('/urls/<int:url_id>')
@@ -52,12 +45,8 @@ def get_url(url_id):
     url_checks = db.get_all_checks_for_url(url_id)
 
     db.close()
-    messages = get_flashed_messages(with_categories=True)
     return render_template(
-        'url_related/url.html',
-        url=url_info,
-        url_checks=url_checks,
-        messages=messages,
+        'url_related/url.html', url=url_info, url_checks=url_checks
     )
 
 
@@ -67,8 +56,7 @@ def create_url_page():
     fixed_url = validate_and_fix_url(new_url)
 
     if not fixed_url:
-        messages = get_flashed_messages(with_categories=True)
-        return render_template('index.html', messages=messages)
+        return render_template('index.html'), 422
 
     db = Database(connect=True)
     found_url = db.get_url_by_name(fixed_url)
