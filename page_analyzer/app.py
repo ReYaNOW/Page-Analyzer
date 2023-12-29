@@ -64,13 +64,13 @@ def create_url_page():
     if not found_url:
         new_url_id = db.add_new_url(fixed_url)
         flash('Страница успешно добавлена', 'success')
-        return redirect(url_for('get_url', url_id=new_url_id), code=302)
+        return redirect(url_for('get_url', url_id=new_url_id))
 
     url_id = found_url.id
     flash('Страница уже существует', 'info')
 
     db.close()
-    return redirect(url_for('get_url', url_id=url_id), code=302)
+    return redirect(url_for('get_url', url_id=url_id))
 
 
 @app.post('/urls/<int:url_id>/checks')
@@ -89,7 +89,7 @@ def make_check(url_id):
         flash('Произошла ошибка при проверке', 'danger')
 
     db.close()
-    return redirect(url_for('get_url', url_id=url_id), code=302)
+    return redirect(url_for('get_url', url_id=url_id))
 
 
 @app.errorhandler(404)
