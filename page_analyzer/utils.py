@@ -54,6 +54,7 @@ def get_specific_tags(page):
 
     h1 = soup.find('h1').string
     title = soup.title.string
-    desc = soup.head.find(attrs={'name': 'description'})['content']
+    tag = soup.head.find(attrs={'name': 'description'})['content']
+    desc = tag['content'] if tag else None
 
     return {'h1': h1, 'title': title, 'desc': desc}
