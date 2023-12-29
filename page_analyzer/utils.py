@@ -53,7 +53,11 @@ def get_specific_tags(page):
     soup = BeautifulSoup(page, 'html.parser')
 
     h1 = soup.find('h1').string
+    h1 = h1.string if h1 else None
+    
     title = soup.title.string
+    title = title.string if title else None
+    
     tag = soup.head.find(attrs={'name': 'description'})
     desc = tag['content'] if tag else None
 
