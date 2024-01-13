@@ -1,4 +1,4 @@
-name: Project linter check with CI
+name: Linter check
 
 on:
   - push
