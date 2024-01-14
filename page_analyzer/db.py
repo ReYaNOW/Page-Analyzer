@@ -15,6 +15,7 @@ FETCH_TYPES = namedtuple('FormatChoices', map(str.upper, _FETCH_TYPE_VALUES))(
 class Database:
     def __init__(self, connect=False):
         if connect:
+            print(DATABASE_URL)
             self.conn = psycopg2.connect(DATABASE_URL)
         else:
             raise ConnectionError('Need to connect to db before execute query')
