@@ -1,8 +1,10 @@
 import os
 
 import psycopg2
+from dotenv import load_dotenv
 from psycopg2.extras import NamedTupleCursor
 
+load_dotenv('.env')
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 
