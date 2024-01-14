@@ -1,4 +1,4 @@
-include .env
+-include .env
 PORT ?= 8000
 
 install:
