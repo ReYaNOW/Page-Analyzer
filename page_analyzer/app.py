@@ -12,7 +12,7 @@ from flask import (
     abort,
 )
 
-from page_analyzer.sql_requests import Database
+from page_analyzer.db import Database
 from page_analyzer.parse_html import get_specific_tags
 from page_analyzer.utils import (
     validate_url,
