@@ -24,7 +24,7 @@ git clone https://github.com/ReYaNOW/python-project-83.git
 
 Заполучить database url, например, от запущенной так же локально БД.
 Как это сделать можно
-найти [тут](https://github.com/Hexlet/ru-instructions/blob/main/postgresql.md).
+найти [тут](https://github.com/Hexlet/ru-instructions/blob/main/postgresql.md).  
 Ниже представлен формат такой ссылки.
 
 ```
@@ -53,17 +53,17 @@ make dev
 
 ### Минимальные требования:
 
-[Python^3.10](https://www.python.org/)  
-[Poetry](https://python-poetry.org/)  
-[PostgreSQL](https://www.postgresql.org/)
+- [Python^3.10](https://www.python.org/)  
+- [Poetry](https://python-poetry.org/)  
+- [PostgreSQL](https://www.postgresql.org/)
 
 #### Библиотеки Python:
 
-[Flask](https://pypi.org/project/Flask/)  
-[Psycopg2-binary](https://pypi.org/project/psycopg2-binary/)  
-[Requests](https://pypi.org/project/requests/)  
-[BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)  
-[Gunicorn](https://pypi.org/project/gunicorn/)  
-[Validators](https://pypi.org/project/validators/)  
-[Python-dotenv](https://pypi.org/project/python-dotenv/)
+- [Flask](https://pypi.org/project/Flask/)  
+- [Psycopg2-binary](https://pypi.org/project/psycopg2-binary/)  
+- [Requests](https://pypi.org/project/requests/)  
+- [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)  
+- [Gunicorn](https://pypi.org/project/gunicorn/)  
+- [Validators](https://pypi.org/project/validators/)  
+- [Python-dotenv](https://pypi.org/project/python-dotenv/)
 
