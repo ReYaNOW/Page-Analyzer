@@ -5,14 +5,14 @@
 Page Analyzer – это приложение, которое анализирует указанные страницы на
 SEO-пригодность.
 При проверке веб-страницы при помощи Page Analyzer приложение извлечет
-несколько HTML тегов важных для SEO.
+несколько HTML тегов, важных для SEO.
 
 ![demo image](https://media.discordapp.net/attachments/324178393161793536/1195950731597983774/image.png)
 
 # Использование
 
-Открыть [тестовый вариант](https://page-analyzer-hexlet.onrender.com/)
-задеплоенный на render.com
+Открыть задеплоенный на render.com 
+[тестовый вариант](https://page-analyzer-hexlet.onrender.com/)
 
 ### Либо задеплоить приложение локально
 
@@ -23,7 +23,7 @@ git clone https://github.com/ReYaNOW/python-project-83.git
 ```
 
 Заполучить database url, например, от запущенной так же локально БД.
-Как это сделать можно
+Как это сделать, можно
 найти [тут](https://github.com/Hexlet/ru-instructions/blob/main/postgresql.md).  
 Ниже представлен формат такой ссылки.
 
@@ -31,7 +31,7 @@ git clone https://github.com/ReYaNOW/python-project-83.git
 postgresql://[user[:password]@][netloc][:port][/dbname]
 ```
 
-Создать файл .env в корневой директории проекта с примерно таким содержанием
+Создать файл .env в корневой директории проекта примерно c таким содержанием
 
 ```dotenv
 DATABASE_URL=postgres://user:password@localhost:5432/dbname
@@ -53,17 +53,17 @@ make dev
 
 ### Минимальные требования:
 
-- [Python^3.10](https://www.python.org/)  
-- [Poetry](https://python-poetry.org/)  
+- [Python^3.10](https://www.python.org/)
+- [Poetry](https://python-poetry.org/)
 - [PostgreSQL](https://www.postgresql.org/)
 
 #### Библиотеки Python:
 
-- [Flask](https://pypi.org/project/Flask/)  
-- [Psycopg2-binary](https://pypi.org/project/psycopg2-binary/)  
-- [Requests](https://pypi.org/project/requests/)  
-- [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)  
-- [Gunicorn](https://pypi.org/project/gunicorn/)  
-- [Validators](https://pypi.org/project/validators/)  
+- [Flask](https://pypi.org/project/Flask/)
+- [Psycopg2-binary](https://pypi.org/project/psycopg2-binary/)
+- [Requests](https://pypi.org/project/requests/)
+- [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
+- [Gunicorn](https://pypi.org/project/gunicorn/)
+- [Validators](https://pypi.org/project/validators/)
 - [Python-dotenv](https://pypi.org/project/python-dotenv/)
 
