@@ -2,7 +2,7 @@
 
 [![Actions Status](https://github.com/ReYaNOW/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/ReYaNOW/python-project-83/actions) [![Linter check](https://github.com/ReYaNOW/python-project-83/actions/workflows/action_tests.yml/badge.svg)](https://github.com/ReYaNOW/python-project-83/actions/workflows/action_tests.yml) [![Maintainability](https://api.codeclimate.com/v1/badges/cabad60e2d465cd10b5f/maintainability)](https://codeclimate.com/github/ReYaNOW/python-project-83/maintainability)
 
-Page Analyzer – это приложение, который анализирует указанные страницы на
+Page Analyzer – это приложение, которое анализирует указанные страницы на
 SEO-пригодность.
 При проверке веб-страницы при помощи Page Analyzer, приложение извлечет
 несколько
@@ -23,7 +23,7 @@ HTML тегов важных для SEO.
 git clone https://github.com/ReYaNOW/python-project-83.git
 ```
 
-Заполучить database url, например от запущенной так же локально БД
+Заполучить database url, например, от запущенной так же локально БД
 
 Создать файл .env в корневой директории проекта с примерно таким содержанием
 
@@ -32,8 +32,8 @@ DATABASE_URL=postgres://user:password@localhost:5432/dbname
 SECRET_KEY=yoursecretkey
 ```  
 
-Установить зависимости и добавить таблицы необходимые для работы приложения в
-бд
+Установить зависимости и добавить таблицы в БД, необходимые для работы
+приложения
 
 ```
 make build
