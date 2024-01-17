@@ -11,10 +11,10 @@ SEO-пригодность.
 
 # Использование
 
-Открыть задеплоенный на render.com 
+Открыть задеплоенный на render.com
 [тестовый вариант](https://page-analyzer-hexlet.onrender.com/)
 
-### Либо задеплоить приложение локально
+### Либо развернуть приложение локально
 
 Склонировать репозиторий
 
@@ -22,13 +22,13 @@ SEO-пригодность.
 git clone https://github.com/ReYaNOW/python-project-83.git
 ```
 
-Заполучить database url, например, от запущенной так же локально БД.
-Как это сделать, можно
-найти [тут](https://github.com/Hexlet/ru-instructions/blob/main/postgresql.md).  
+Развернуть БД PostgreSQL, как это сделать, можно
+найти [тут](https://github.com/Hexlet/ru-instructions/blob/main/postgresql.md).
+После этого составить database url.  
 Ниже представлен формат такой ссылки.
 
 ```
-postgresql://[user[:password]@][netloc][:port][/dbname]
+postgresql://[user][:password]@[hostname][:port][/dbname]
 ```
 
 Создать файл .env в корневой директории проекта примерно c таким содержанием
