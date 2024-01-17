@@ -12,18 +12,11 @@ from flask import (
     abort,
 )
 
-from page_analyzer.db import Database
+from page_analyzer.db import DatabaseConnection
 from page_analyzer.parse_html import get_specific_tags
-from page_analyzer.utils import (
-    validate_url,
-    fix_url,
-)
+from page_analyzer.utils import validate_url, normalize_url
 
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) '
-    'Gecko/20100101 Firefox/120.0'
-}
-load_dotenv('.env')
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
@@ -36,7 +29,7 @@ def index():
 
 @app.get('/urls')
 def show_urls():
-    db = Database(connect=True)
+    db = DatabaseConnection()
     urls_with_code = db.get_urls_with_code()
 
     db.close()
@@ -45,7 +38,7 @@ def show_urls():
 
 @app.route('/urls/<int:url_id>')
 def show_url_page(url_id):
-    db = Database(connect=True)
+    db = DatabaseConnection()
     url_info = db.get_url_by_id(id_=url_id)
     if not url_info:
         return abort(404)
@@ -67,8 +60,8 @@ def create_url_page():
         flash(error_message, 'danger')
         return render_template('index.html'), 422
 
-    fixed_url = fix_url(url)
-    db = Database(connect=True)
+    fixed_url = normalize_url(url)
+    db = DatabaseConnection()
     found_url = db.get_url_by_name(fixed_url)
 
     if found_url:
@@ -84,11 +77,11 @@ def create_url_page():
 
 @app.post('/urls/<int:url_id>/checks')
 def process_url_check(url_id):
-    db = Database(connect=True)
+    db = DatabaseConnection()
     url = db.get_url_by_id(url_id)
 
     try:
-        resp = requests.get(url.name, headers=HEADERS)
+        resp = requests.get(url.name)
         resp.raise_for_status()
     except requests.RequestException:
         db.close()
@@ -109,4 +102,4 @@ def page_not_found(_):
 
 @app.errorhandler(500)
 def internal_server_error(_):
-    return render_template('errors/404.html'), 500
+    return render_template('errors/500.html'), 500
