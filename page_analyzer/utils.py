@@ -14,7 +14,7 @@ def validate_url(url: str) -> str:
         return 'Некорректный URL'
 
 
-def fix_url(url: str) -> str:
+def normalize_url(url: str) -> str:
     parsed_url = urlparse(url)
 
     normalized_scheme = parsed_url.scheme.lower()
