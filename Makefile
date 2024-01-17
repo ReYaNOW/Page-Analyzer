@@ -9,7 +9,7 @@ build:
 	psql -a -d ${DATABASE_URL} -f database.sql
 
 dev:
-	poetry run flask --app page_analyzer:app --debug run --port 8000
+	poetry run flask --app page_analyzer:app --debug run --port $(PORT)
 
 start:
 	poetry run gunicorn -w 5 -b 0.0.0.0:$(PORT) page_analyzer:app
@@ -17,5 +17,5 @@ start:
 lint:
 	poetry run flake8 page_analyzer
 
-truncate_db:
+truncate_tables:
 	psql -a -d ${DATABASE_URL} -c 'TRUNCATE TABLE urls, url_checks'
