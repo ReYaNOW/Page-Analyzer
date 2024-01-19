@@ -6,15 +6,15 @@
            data-test="url">
       <tbody>
       <tr>
-        <td>ID</td>
+        <th>ID</th>
         <td>{{ url.id }}</td>
       </tr>
       <tr>
-        <td>Имя</td>
+        <th>Имя</th>
         <td>{{ url.name }}</td>
       </tr>
       <tr>
-        <td>Дата создания</td>
+        <th>Дата создания</th>
         <td>{{ url.created_at }}</td>
       </tr>
       </tbody>
@@ -25,5 +25,30 @@
         action="{{ url_for('process_url_check', url_id=url.id) }}">
     <input type="submit" class="btn btn-primary" value="Запустить проверку">
   </form>
-  {% include 'includes/checks_table.html' %}
+  <div>
+    <table class="table table-bordered table-hover mt-2" data-test="checks">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Код ответа</th>
+        <th>h1</th>
+        <th>title</th>
+        <th>description</th>
+        <th>Дата создания</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for check in url_checks %}
+        <tr>
+          <td>{{ check.id }}</td>
+          <td>{{ check.status_code }}</td>
+          <td>{{ check.h1 if  check.h1 else '' }}</td>
+          <td>{{ check.title if  check.title else '' }} </td>
+          <td>{{ check.description if  check.description else '' }}</td>
+          <td>{{ check.created_at }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endblock %}
