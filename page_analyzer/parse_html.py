@@ -10,7 +10,7 @@ def get_specific_tags(response: Response):
     desc = soup.find('meta', attrs={'name': 'description'})
 
     return {
-        'h1': '' if h1 is None else h1.text[:255],
-        'title': '' if title is None else title.text[:255],
-        'desc': '' if desc is None else desc.get('content', ''),
+        'h1': h1.text[:255] if h1 else '',
+        'title': title.text[:255] if title else '',
+        'desc': desc.get('content', '') if desc else '',
     }
