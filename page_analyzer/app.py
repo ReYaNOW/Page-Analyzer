@@ -12,7 +12,7 @@ from flask import (
     abort,
 )
 
-from page_analyzer.db import DatabaseConnection
+from page_analyzer.db import DbConnectionProcessor
 from page_analyzer.parse_html import get_specific_tags
 from page_analyzer.utils import validate_url, normalize_url
 
@@ -29,7 +29,7 @@ def index():
 
 @app.get('/urls')
 def show_urls():
-    db = DatabaseConnection()
+    db = DbConnectionProcessor()
     urls_with_code = db.get_urls_with_code()
 
     db.close()
@@ -38,7 +38,7 @@ def show_urls():
 
 @app.route('/urls/<int:url_id>')
 def show_url_page(url_id):
-    db = DatabaseConnection()
+    db = DbConnectionProcessor()
     url_info = db.get_url_by_id(id_=url_id)
     if not url_info:
         return abort(404)
@@ -61,7 +61,7 @@ def create_url_page():
         return render_template('index.html'), 422
 
     fixed_url = normalize_url(url)
-    db = DatabaseConnection()
+    db = DbConnectionProcessor()
     found_url = db.get_url_by_name(fixed_url)
 
     if found_url:
@@ -77,7 +77,7 @@ def create_url_page():
 
 @app.post('/urls/<int:url_id>/checks')
 def process_url_check(url_id):
-    db = DatabaseConnection()
+    db = DbConnectionProcessor()
     url = db.get_url_by_id(url_id)
 
     try:
