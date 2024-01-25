@@ -61,6 +61,7 @@ class DbConnectionProcessor:
         return self._execute_query(
             'INSERT INTO urls (name) VALUES (%s) RETURNING id',
             (url,),
+            fetch_type=FETCH_TYPES.ONE,
         ).id
 
     @with_commit
