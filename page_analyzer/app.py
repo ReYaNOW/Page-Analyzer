@@ -30,17 +30,18 @@ def index():
 @app.get('/urls')
 def show_urls():
     db = DbConnectionProcessor()
-    urls_with_code = db.get_urls_with_code()
+    urls = db.get_urls_with_code_and_last_check_date()
 
     db.close()
-    return render_template('urls/urls.html', urls=urls_with_code)
+    return render_template('urls/urls.html', urls=urls)
 
 
 @app.route('/urls/<int:url_id>')
 def show_url_page(url_id):
     db = DbConnectionProcessor()
-    url_info = db.get_url_by_id(id_=url_id)
+    url_info = db.get_url(id_=url_id)
     if not url_info:
+        db.close()
         return abort(404)
 
     url_checks = db.get_all_checks_for_url(url_id)
@@ -66,19 +67,19 @@ def create_url_page():
 
     if found_url:
         flash('Страница уже существует', 'info')
-        new_url_id = found_url.id
+        url_id = found_url.id
     else:
-        new_url_id = db.add_new_url(fixed_url)
+        url_id = db.add_url(fixed_url)
         flash('Страница успешно добавлена', 'success')
 
     db.close()
-    return redirect(url_for('show_url_page', url_id=new_url_id))
+    return redirect(url_for('show_url_page', url_id=url_id))
 
 
 @app.post('/urls/<int:url_id>/checks')
 def process_url_check(url_id):
     db = DbConnectionProcessor()
-    url = db.get_url_by_id(url_id)
+    url = db.get_url(url_id)
 
     try:
         resp = requests.get(url.name)
