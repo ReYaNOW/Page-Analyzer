@@ -14,7 +14,7 @@ FETCH_TYPES = namedtuple('FormatChoices', map(str.upper, _FETCH_TYPE_VALUES))(
 )
 
 
-def make_commit_after(func):
+def with_commit(func):
     def inner(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
         self.conn.commit()
@@ -27,13 +27,7 @@ class DbConnectionProcessor:
     def __init__(self):
         self.conn = psycopg2.connect(DATABASE_URL)
 
-    def _execute_query(self, request, params=None):
-        with self.conn.cursor(cursor_factory=NamedTupleCursor) as curs:
-            curs.execute(request, params)
-
-    def _execute_query_with_fetch(
-        self, request, params=None, fetch_type=FETCH_TYPES.ONE
-    ):
+    def _execute_query(self, request, params=None, fetch_type=None):
         with self.conn.cursor(cursor_factory=NamedTupleCursor) as curs:
             curs.execute(request, params)
 
@@ -44,30 +38,32 @@ class DbConnectionProcessor:
                     return curs.fetchall()
 
     def get_all_urls(self):
-        return self._execute_query_with_fetch(
+        return self._execute_query(
             'SELECT * FROM urls ORDER BY id DESC', fetch_type=FETCH_TYPES.ALL
         )
 
     def get_url_by_name(self, url):
-        return self._execute_query_with_fetch(
-            'SELECT * FROM urls WHERE name=%s', (url,)
+        return self._execute_query(
+            'SELECT * FROM urls WHERE name=%s',
+            (url,),
+            fetch_type=FETCH_TYPES.ONE,
         )
 
-    def get_url_by_id(self, id_):
-        return self._execute_query_with_fetch(
-            'SELECT * FROM urls WHERE id=%s', (id_,)
+    def get_url(self, id_):
+        return self._execute_query(
+            'SELECT * FROM urls WHERE id=%s',
+            (id_,),
+            fetch_type=FETCH_TYPES.ONE,
         )
 
-    @make_commit_after
-    def add_new_url(self, url):
-        added_url = self._execute_query_with_fetch(
+    @with_commit
+    def add_url(self, url):
+        return self._execute_query(
             'INSERT INTO urls (name) VALUES (%s) RETURNING id',
             (url,),
-        )
-        self.conn.commit()
-        return added_url.id
+        ).id
 
-    @make_commit_after
+    @with_commit
     def add_check(self, url_id, status_code, tags):
         h1, title, desc = tags['h1'], tags['title'], tags['desc']
         self._execute_query(
@@ -78,14 +74,14 @@ class DbConnectionProcessor:
         )
 
     def get_all_checks_for_url(self, url_id):
-        return self._execute_query_with_fetch(
+        return self._execute_query(
             'SELECT * FROM url_checks WHERE url_id=%s ORDER BY id DESC',
             (url_id,),
             fetch_type=FETCH_TYPES.ALL,
         )
 
-    def get_urls_with_code(self):
-        return self._execute_query_with_fetch(
+    def get_urls_with_code_and_last_check_date(self):
+        return self._execute_query(
             'SELECT DISTINCT ON (urls.id) urls.id, name,  '
             'url_checks.created_at AS last_check, '
             'status_code AS last_code '
