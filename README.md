@@ -51,6 +51,12 @@ make build
 make dev
 ```  
 
+Либо задеплоить проект при помощи сервера gunicorn локально или например, на [render.com](https://render.com/)
+
+```
+make start
+```  
+
 ### Минимальные требования:
 
 - [Python^3.10](https://www.python.org/)
