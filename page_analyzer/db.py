@@ -14,15 +14,6 @@ FETCH_TYPES = namedtuple('FormatChoices', map(str.upper, _FETCH_TYPE_VALUES))(
 )
 
 
-def with_commit(func):
-    def inner(self, *args, **kwargs):
-        result = func(self, *args, **kwargs)
-        self.conn.commit()
-        return result
-
-    return inner
-
-
 class DbConnectionProcessor:
     def __init__(self):
         self.conn = psycopg2.connect(DATABASE_URL)
@@ -36,6 +27,19 @@ class DbConnectionProcessor:
                     return curs.fetchone()
                 case FETCH_TYPES.ALL:
                     return curs.fetchall()
+
+    @staticmethod
+    def with_commit(func):
+        def inner(self, *args, **kwargs):
+            try:
+                result = func(self, *args, **kwargs)
+                self.conn.commit()
+                return result
+            except psycopg2.Error as e:
+                self.conn.rollback()
+                raise e
+
+        return inner
 
     def get_all_urls(self):
         return self._execute_query(
