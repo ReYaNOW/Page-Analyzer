@@ -7,7 +7,7 @@ SEO-пригодность.
 При проверке веб-страницы при помощи Page Analyzer приложение извлечет
 несколько HTML тегов, важных для SEO.
 
-![demo image](https://media.discordapp.net/attachments/324178393161793536/1195950731597983774/image.png)
+![demo image](https://github.com/ReYaNOW/ReYaNOW/blob/main/image.png?raw=true)
 
 # Использование
 
