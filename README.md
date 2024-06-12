@@ -12,7 +12,7 @@ SEO-пригодность.
 # Использование
 
 Открыть задеплоенный на render.com
-[тестовый вариант](https://page-analyzer-hexlet.onrender.com/)
+[тестовый вариант](https://page-analyzer-hexlet-test.onrender.com/)
 
 ### Либо развернуть приложение локально
 
